@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Elternkompass 3–6 Jahre</title>
+<style>
+body { font-family: Arial, sans-serif; background-color: #f9f9f9; margin: 20px; }
+h1,h2,h3,h4 { color: #333; }
+.container { max-width: 1200px; margin: auto; }
+.accordion { background-color: #eee; color: #444; cursor: pointer; padding: 10px; width: 100%; border: none; text-align: left; outline: none; transition: 0.4s; margin-bottom:5px; font-size:16px; }
+.active, .accordion:hover { background-color: #ccc; }
+.panel { padding: 0 10px; display: none; background-color: white; overflow: hidden; border-left:2px solid #ccc; border-right:2px solid #ccc; border-bottom:2px solid #ccc; margin-bottom:5px;}
+.subaccordion { background-color: #f5f5f5; margin-left:10px; padding:8px; border-left:2px solid #bbb; cursor:pointer; }
+.subaccordion:hover { background-color:#ddd; }
+table { border-collapse: collapse; width: 100%; margin-bottom:10px;}
+th, td { border: 1px solid #aaa; padding: 8px; text-align: left;}
+th { background-color: #ddd; }
+.tip { background-color:#fafafa; padding:10px; border-left:4px solid #888; margin-bottom:10px;}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Elternkompass – Altersgruppe 3–6 Jahre</h1>
+<p>Klicke auf ein Hauptthema, dann auf ein Unterproblem, um die Tipps & Strategien zu sehen:</p>
+
+<div id="topicsContainer"></div>
+
+</div>
+
+<script>
+// ======= HIER KOMMEN DIE DATEN ======= //
+const data = {
+"Trotz & Wut": {
+  "Wirft sich auf den Boden beim Abholen": {
+    "Beschreibung":"Das Kind wirft sich auf den Boden, schreit und wehrt sich beim Abholen.",
+    "Tipps":"Ruhig bleiben, Blickkontakt, Gefühle benennen.",
+    "Ausfuehrlich":"Bleibe ruhig und sage: 'Ich sehe, du bist wütend, weil wir jetzt gehen müssen.' Biete kleine Wahlmöglichkeiten an, z.B. 'Willst du zuerst deine Schuhe oder deine Jacke ausziehen?' So lernt das Kind, dass Gefühle gesehen werden, Grenzen aber bestehen bleiben."
+  },
+  "Schreit bei Nein": {
+    "Beschreibung":"Reagiert auf 'Nein' mit Schreien oder Wut.",
+    "Tipps":"Klare Grenzen setzen, alternative Angebote.",
+    "Ausfuehrlich":"Wenn dein Kind schreit, sage ruhig: 'Ich verstehe, du willst noch spielen, aber jetzt müssen wir gehen.' Biete Alternativen: 'Du darfst später noch 5 Minuten spielen.' So lernt das Kind, dass 'Nein' nicht das Ende der Welt ist."
+  },
+  "Verweigert Routine": {
+    "Beschreibung":"Weigert sich, alltägliche Routinen einzuhalten.",
+    "Tipps":"Kurze Rituale, feste Reihenfolge.",
+    "Ausfuehrlich":"Führe feste Abläufe ein, z.B. Zähneputzen nach dem Abendessen. Mache Rituale spielerisch: Timer, Lied, Schritt-für-Schritt-Anleitung. Belohne kleine Erfolge mit Lob."
+  },
+  "Wutanfälle im Supermarkt": {
+    "Beschreibung":"Wirft sich hin, schreit, wenn Wünsche nicht erfüllt werden.",
+    "Tipps":"Vorher informieren, kurze Ansagen.",
+    "Ausfuehrlich":"Ankündigen: 'In 5 Minuten gehen wir weiter.' Kurze, klare Ansagen geben, Ablenkung anbieten, z.B. Lieblingsspielzeug. Konsequenz beibehalten."
+  },
+  "Aggression gegen Geschwister": {
+    "Beschreibung":"Schlägt oder stößt Geschwister bei Konflikten.",
+    "Tipps":"Trennen, Gefühle benennen.",
+    "Ausfuehrlich":"Trenne die Kinder und erkläre: 'Es ist okay, wütend zu sein, aber wir schlagen nicht.' Übe Konfliktlösung: 'Wir können mit Worten sagen, was uns stört.'"
+  },
+  "Weint beim Abschied (Kita)": {
+    "Beschreibung":"Trennungsangst beim Kita-Abschied.",
+    "Tipps":"Kurze Rituale, vorher ankündigen.",
+    "Ausfuehrlich":"Ritual einführen: High-Five, Kuss, kurze Verabschiedung. Sagt: 'Nach der Geschichte komm ich wieder.' Abschied kurz halten."
+  },
+  "Schreien bei Übergang": {
+    "Beschreibung":"Wehrt sich beim Wechsel zwischen Aktivitäten.",
+    "Tipps":"Vorankündigung, klare Ansagen.",
+    "Ausfuehrlich":"5 Minuten vorher ankündigen: 'Wir räumen noch 2 Minuten, dann gehen wir.' Rituale beibehalten. Loben, wenn Übergang klappt."
+  },
+  "Fremdeln": {
+    "Beschreibung":"Angst vor neuen Personen oder Situationen.",
+    "Tipps":"Sanft einführen, Nähe anbieten.",
+    "Ausfuehrlich":"Nicht drängen, Nähe anbieten. Vertrauen aufbauen: 'Schau, hier bin ich, du bist sicher.' Kleine Schritte, neue Personen langsam kennenlernen lassen."
+  },
+  "Schreit beim Anziehen": {
+    "Beschreibung":"Weigert sich, Kleidung anzuziehen.",
+    "Tipps":"Wahlmöglichkeiten, Zeit lassen.",
+    "Ausfuehrlich":"Gib zwei Outfits zur Wahl. Schritt-für-Schritt helfen. Rituale einführen: 'Zuerst Socken, dann Schuhe.' Geduldig bleiben, Lob geben."
+  },
+  "Zerstört Spielzeug": {
+    "Beschreibung":"Wirft oder zerstört Spielzeug bei Frust.",
+    "Tipps":"Gefühle benennen, alternative Handlung.",
+    "Ausfuehrlich":"Sag: 'Ich sehe, du bist wütend, aber wir zerstören keine Spielsachen.' Zeige alternative Wege: Kneten, Kissen schlagen, Gefühle ausdrücken."
+  }
+},
+
+"Essen": {
+  "Wählt immer dasselbe Essen": {
+    "Beschreibung":"Isst nur bestimmte Lebensmittel.",
+    "Tipps":"Zwei Optionen anbieten, langsam variieren.",
+    "Ausfuehrlich":"Biete jeden Tag zwei Auswahlmöglichkeiten an. Lass das Kind entscheiden. Zeige selbst, dass du Neues probierst. Kleine Schritte einführen."
+  },
+  "Spielt mit Essen": {
+    "Beschreibung":"Spielt statt zu essen.",
+    "Tipps":"Kurz und klar reagieren, Anleitung.",
+    "Ausfuehrlich":"Sage ruhig: 'Essen gehört auf den Teller.' Zeige spielerisch, wie man richtig isst. Ablenkung durch Spielzeug vermeiden."
+  },
+  "Keine Geduld beim Essen": {
+    "Beschreibung":"Will nicht warten oder isst hastig.",
+    "Tipps":"Kleine Portionen, Timer, Lob.",
+    "Ausfuehrlich":"Gemeinsam essen, kleine Portionen, Pausen einbauen. Timer nutzen: '5 Bissen, dann Pause.' Loben für Geduld."
+  },
+  "Abneigung gegen neues Essen": {
+    "Beschreibung":"Neue Lebensmittel werden verweigert.",
+    "Tipps":"Schrittweise einführen, Modelllernen.",
+    "Ausfuehrlich":"Neues Essen schrittweise anbieten. Eltern zeigen Vorbild, probieren selbst. Kein Zwang, Lob für jedes Probieren."
+  },
+  "Schlechte Tischmanieren": {
+    "Beschreibung":"Essen mit Händen, kleckern.",
+    "Tipps":"Regeln kurz erklären, spielerisch üben.",
+    "Ausfuehrlich":"Klare Regeln: Hände auf Tisch, Löffel nutzen. Üben spielerisch, loben bei Erfolg."
+  },
+  "Zu schnell essen": {
+    "Beschreibung":"Hastiges Essen.",
+    "Tipps":"Timer, gemeinsam langsam essen.",
+    "Ausfuehrlich":"Timer nutzen, gemeinsam essen, Pausen einlegen. Lob für ruhiges Essen."
+  },
+  "Ablehnung beim Teilen": {
+    "Beschreibung":"Teilen verweigert.",
+    "Tipps":"Kleine Mengen teilen, Lob.",
+    "Ausfuehrlich":"Übe mit kleinen Mengen, lobe kooperatives Verhalten, zeige Vorteile des Teilens: Freude, Freundschaft."
+  },
+  "Nur Süßes wollen": {
+    "Beschreibung":"Bevorzugt nur Süßigkeiten.",
+    "Tipps":"Gesunde Alternativen, positive Sprache.",
+    "Ausfuehrlich":"Biete gesunde Snacks kreativ an, z.B. Obst lustig anrichten. Keine Strafen, Lob für gesunde Auswahl."
+  },
+  "Nicht selbstständig essen": {
+    "Beschreibung":"Will gefüttert werden.",
+    "Tipps":"Routine üben, Besteck zeigen.",
+    "Ausfuehrlich":"Schrittweise Selbstständigkeit üben: Löffel zeigen, Hände führen, loben für eigene Versuche."
+  },
+  "Essen verschmutzt": {
+    "Beschreibung":"Kleckert oft beim Essen.",
+    "Tipps":"Geduld, Routine.",
+    "Ausfuehrlich":"Geduldig anleiten, Teller richtig platzieren, Kleidung schützen. Regelmäßig üben, loben für sauberes Essen."
+  }
+},
+
+"Schlaf": {
+  "Schläft unregelmäßig ein": {
+    "Beschreibung":"Kind braucht lange bis zum Einschlafen.",
+    "Tipps":"Rituale, feste Uhrzeit.",
+    "Ausfuehrlich":"Führe feste Einschlafrituale ein: Lesen, Kuscheln, beruhigendes Lied. Gleiche Uhrzeit jeden Abend."
+  },
+  "Wacht nachts auf": {
+    "Beschreibung":"Kind wacht häufig auf.",
+    "Tipps":"Ruhige Reaktion, feste Routine.",
+    "Ausfuehrlich":"Ruhig bleiben, Kind beruhigen ohne Einschlafmuster zu ändern. Kurzzeitige Nähe reicht, kein Spielen."
+  },
+  "Schläft tagsüber nicht": {
+    "Beschreibung":"Mittagsschlaf wird verweigert.",
+    "Tipps":"Ruhige Umgebung, feste Uhrzeit.",
+    "Ausfuehrlich":"Ruhige, dunkle Umgebung schaffen. Kurze Geschichten oder Kuschelzeit statt Nickerchen erzwingen."
+  },
+  "Angst im Dunkeln": {
+    "Beschreibung":"Fürchtet sich vor Dunkelheit.",
+    "Tipps":"Nachtlicht, Sicherheit vermitteln.",
+    "Ausfuehrlich":"Nachtlicht nutzen, beruhigende Worte: 'Alles ist in Ordnung.' Ritual vor dem Schlafengehen stärken."
+  },
+  "Träumt viel": {
+    "Beschreibung":"Alpträume oder unruhiger Schlaf.",
+    "Tipps":"Gefühle benennen, Sicherheit geben.",
+    "Ausfuehrlich":"Mit Kind über Träume sprechen, Nähe geben, Schlafroutine stärken."
+  },
+  "Schläft zu wenig": {
+    "Beschreibung":"Abend schläft spät ein, früh wach.",
+    "Tipps":"Feste Schlafenszeit, Rituale.",
+    "Ausfuehrlich":"Konsequente Einschlafzeit einführen, Abendritual einhalten, Bildschirmzeit reduzieren."
+  },
+  "Schläft bei Übergang schlecht": {
+    "Beschreibung":"Schlechter Schlaf bei Änderungen.",
+    "Tipps":"Vertraute Gegenstände, Routine beibehalten.",
+    "Ausfuehrlich":"Lieblingskuscheltiere, bekannte Routine beibehalten, kurze Erklärungen für Änderungen geben."
+  },
+  "Unruhe im Bett": {
+    "Beschreibung":"Wälzt sich, steigt auf und ab.",
+    "Tipps":"Ruhige Umgebung, sanft begleiten.",
+    "Ausfuehrlich":"Licht dimmen, ruhige Stimme, kleine Streicheleinheiten, Konsequenz bei Aufstehen."
+  },
+  "Einschlafangst": {
+    "Beschreibung":"Meldet Angst vor Schlafen.",
+    "Tipps":"Kurze Begleitung, Vertrauen stärken.",
+    "Ausfuehrlich":"Kurze Anwesenheit, beruhigende Worte, Schrittweise alleine bleiben lassen."
+  },
+  "Häufiges Aufstehen": {
+    "Beschreibung":"Kommt häufig ins Elternbett.",
+    "Tipps":"Klare Regeln, Nähe geben.",
+    "Ausfuehrlich":"Kurze Nähe, dann sanft ins eigene Bett zurückbringen, Lob für eigenes Bett."
+  }
+},
+
+"Körperpflege": {
+  "Weigert sich Zähne zu putzen": {
+    "Beschreibung":"Zähneputzen wird verweigert.",
+    "Tipps":"Spielerisch, kurze Dauer.",
+    "Ausfuehrlich":"Zähneputzen als Spiel einführen, Timer nutzen, eigenes Vorbild zeigen. Kleine Belohnung für Kooperation."
+  },
+  "Waschen verweigert": {
+    "Beschreibung":"Kind will nicht baden/duschen.",
+    "Tipps":"Rituale, Wahlmöglichkeiten.",
+    "Ausfuehrlich":"Kind darf Shampoo auswählen, Badewanne mit Spielzeug, feste Reihenfolge einführen."
+  },
+  "Hände nicht waschen": {
+    "Beschreibung":"Verweigert Händewaschen vor Essen.",
+    "Tipps":"Kurze Erinnerung, spielerisch.",
+    "Ausfuehrlich":"Lieder singen, Seifenblasen verwenden, Vorbildfunktion zeigen."
+  },
+  "Nase putzen verweigert": {
+    "Beschreibung":"Will Nase nicht putzen.",
+    "Tipps":"Kurze Demonstration, gemeinsam üben.",
+    "Ausfuehrlich":"Demonstriere selbst, Lob bei eigenem Versuch, Geduld."
+  },
+  "Kleidung selbst anziehen verweigert": {
+    "Beschreibung":"Weigert sich, Kleidung anzuziehen.",
+    "Tipps":"Wahlmöglichkeiten, Schritt-für-Schritt.",
+    "Ausfuehrlich":"Zwei Outfits zur Wahl, Schrittweise helfen, Lob für eigene Aktionen."
+  },
+  "Nagelpflege verweigert": {
+    "Beschreibung":"Lässt Nägel nicht schneiden.",
+    "Tipps":"Kurze Termine, sanft erklären.",
+    "Ausfuehrlich":"Kurze, ruhige Momente, positive Sprache, Kind vorbereiten, kleine Belohnung."
+  },
+  "Zähne putzen nachts verweigert": {
+    "Beschreibung":"Schläft ein ohne Zähneputzen.",
+    "Tipps":"Kurze Erinnerung, Ritual.",
+    "Ausfuehrlich":"Ritual einführen, kurz wach machen, gemeinsam putzen, danach Lob."
+  },
+  "Haare kämmen verweigert": {
+    "Beschreibung":"Wehrt sich gegen Kämmen.",
+    "Tipps":"Sanft, spielerisch.",
+    "Ausfuehrlich":"Spielerisch kämmen, lockere Bewegungen, Kinderbürste nutzen, Lob."
+  },
+  "Gesicht waschen verweigert": {
+    "Beschreibung":"Weigert sich, Gesicht zu waschen.",
+    "Tipps":"Kleine Schritte, spielerisch.",
+    "Ausfuehrlich":"Kind darf Waschhandschuh halten, spielerisch zeigen, loben."
+  },
+  "Ohren reinigen verweigert": {
+    "Beschreibung":"Lässt Ohren nicht reinigen.",
+    "Tipps":"Nur äußerlich, spielerisch erklären.",
+    "Ausfuehrlich":"Nur äußerlich reinigen, erklären warum wichtig, Lob für Mitarbeit."
+  }
+},
+
+"Sozialverhalten": {
+  "Teilen verweigern": {
+    "Beschreibung":"Kind gibt Spielzeug nicht ab.",
+    "Tipps":"Kleine Mengen teilen, Lob.",
+    "Ausfuehrlich":"Übe mit kleinen Mengen, lobe kooperatives Verhalten, erkläre Vorteile des Teilens."
+  },
+  "Aggression bei Konflikten": {
+    "Beschreibung":"Schlägt oder stößt andere Kinder.",
+    "Tipps":"Gefühle benennen, alternative Handlung.",
+    "Ausfuehrlich":"Gefühle benennen: 'Ich sehe, du bist wütend.' Alternative Handlungen zeigen: Händeschütteln, Worte nutzen."
+  },
+  "Fremde Kinder meiden": {
+    "Beschreibung":"Spielt nicht mit anderen Kindern.",
+    "Tipps":"Sanft einführen, Spielangebote.",
+    "Ausfuehrlich":"Langsam mit kleinen Gruppen einführen, Spielmöglichkeiten anbieten, positive Erfahrungen bestärken."
+  },
+  "Übermäßig anhänglich": {
+    "Beschreibung":"Will ständig bei Bezugsperson sein.",
+    "Tipps":"Kurze Abstände, kleine Aufgaben.",
+    "Ausfuehrlich":"Kurze Trennungen üben, Lob bei Selbstständigkeit, kleine Aufgaben alleine."
+  },
+  "Streit mit Geschwistern": {
+    "Beschreibung":"Häufiger Konflikt mit Geschwistern.",
+    "Tipps":"Konfliktmoderation, Regeln erklären.",
+    "Ausfuehrlich":"Beide Seiten hören, Gefühle benennen, Regeln erklären: 'Wir schlagen nicht, wir sagen, was uns stört.'"
+  },
+  "Angst vor Gruppen": {
+    "Beschreibung":"Meidet Kindergruppen.",
+    "Tipps":"Schrittweise Eingewöhnung, Lob.",
+    "Ausfuehrlich":"Kurze Aufenthalte, positive Verstärkung, bekannte Bezugsperson dabei."
+  },
+  "Nicht abwarten können": {
+    "Beschreibung":"Unterbricht andere, wartet nicht.",
+    "Tipps":"Geduld üben, Timer, kurze Aufgaben.",
+    "Ausfuehrlich":"Kleine Wartezeiten üben, Timer nutzen, loben für Geduld."
+  },
+  "Macht andere Kinder traurig": {
+    "Beschreibung":"Stört oder verletzt andere Kinder.",
+    "Tipps":"Gefühle erklären, alternative Handlungen.",
+    "Ausfuehrlich":"Erkläre Wirkung: 'Das verletzt dein Freund.' Alternative Handlung zeigen: teilen, fragen."
+  },
+  "Überreaktion bei Spiel": {
+    "Beschreibung":"Wird schnell wütend bei kleinen Konflikten.",
+    "Tipps":"Gefühle benennen, kurze Pausen.",
+    "Ausfuehrlich":"Gefühle benennen, Kind kurz aus Spiel nehmen, dann wieder einführen, positive Verstärkung."
+  },
+  "Eifersucht auf Geschwister": {
+    "Beschreibung":"Meckert, weint oder wird wütend bei Aufmerksamkeit für Geschwister.",
+    "Tipps":"Aufmerksamkeit teilen, Gefühle benennen.",
+    "Ausfuehrlich":"Kurze Einzeltime geben, Gefühle ansprechen: 'Ich sehe, du bist traurig.' Lob für geteilte Momente."
+  }
+},
+
+"Sprache & Kommunikation": {
+  "Spricht wenig": {
+    "Beschreibung":"Kind spricht kaum oder sehr wenig.",
+    "Tipps":"Geduldig zuhören, Wiederholen und erweitern.",
+    "Ausfuehrlich":"Reagiere geduldig, wiederhole seine Worte korrekt, erweitere sie: 'Ja, das ist ein roter Ball.' Lobe jedes gesprochene Wort, biete Bilderbücher, Gespräche an."
+  },
+  "Versteht Anweisungen nicht": {
+    "Beschreibung":"Folgt einfachen Anweisungen nur selten.",
+    "Tipps":"Kurze, klare Anweisungen, Blickkontakt.",
+    "Ausfuehrlich":"Sage kurze Sätze, stelle Blickkontakt her, wiederhole bei Bedarf. Schritt-für-Schritt-Anweisungen geben und Lob bei Umsetzung."
+  },
+  "Fragen stellen": {
+    "Beschreibung":"Stellt wenig Fragen.",
+    "Tipps":"Neugier fördern, Vorlesen, Fragen zurückgeben.",
+    "Ausfuehrlich":"Stelle Fragen, lese Bilderbücher, beantworte neugierig. Beispiel: 'Was glaubst du, was passiert als Nächstes?'"
+  },
+  "Stottern": {
+    "Beschreibung":"Spricht stockend, Wörter werden wiederholt.",
+    "Tipps":"Nicht korrigieren, ruhig sprechen, Geduld.",
+    "Ausfuehrlich":"Unterbrich nicht, spreche selbst langsam und ruhig, biete entspannte Sprechsituationen. Geduld und Lob fördern."
+  },
+  "Unklare Aussprache": {
+    "Beschreibung":"Manche Wörter werden schwer verständlich ausgesprochen.",
+    "Tipps":"Nachsprechen spielerisch üben.",
+    "Ausfuehrlich":"Bilde Silben oder Reime, lass das Kind nachsprechen, lobe Fortschritte, spielerische Übungen wie Zungenbrecher."
+  },
+  "Nicht zuhören": {
+    "Beschreibung":"Hört bei Anweisungen schlecht zu.",
+    "Tipps":"Blickkontakt, kurze Sätze, wiederholen.",
+    "Ausfuehrlich":"Auf Augenhöhe gehen, Blickkontakt herstellen, Sätze kurz halten, bei Missverständnis ruhig wiederholen, Lob für Zuhören."
+  },
+  "Ein-Wort-Sätze": {
+    "Beschreibung":"Spricht nur Einzelwörter.",
+    "Tipps":"Sätze erweitern, auf Worte reagieren.",
+    "Ausfuehrlich":"Wiederhole das Wort in einem Satz: 'Ball' → 'Ja, der Ball ist rot.' So lernt das Kind Satzbau spielerisch."
+  },
+  "Frust beim Sprechen": {
+    "Beschreibung":"Wird wütend, wenn es sich nicht ausdrücken kann.",
+    "Tipps":"Gefühle benennen, Geduld zeigen.",
+    "Ausfuehrlich":"Sage: 'Ich sehe, du bist wütend, weil du das Wort nicht sagen kannst.' Hilf mit einfachen Worten, biete Alternativen oder Gesten."
+  },
+  "Nur kurze Gespräche": {
+    "Beschreibung":"Kind spricht nur kurz und wechselt schnell Thema.",
+    "Tipps":"Längere Gespräche spielerisch üben.",
+    "Ausfuehrlich":"Stelle offene Fragen, spiele Rollenspiele, lobe ausführliche Antworten. Beispiel: 'Erzähl mir, was du heute im Kindergarten gemacht hast.'"
+  },
+  "Spricht nicht mit Fremden": {
+    "Beschreibung":"Meidet oder spricht nicht mit unbekannten Personen.",
+    "Tipps":"Langsame Einführung, kleine Schritte.",
+    "Ausfuehrlich":"Langsam neue Personen vorstellen, vertraute Gegenstände mitgeben, positive Verstärkung für kurze Interaktion."
+  }
+},
+
+"Motorik & Bewegung": {
+  "Unsicher beim Laufen": {
+    "Beschreibung":"Kind stolpert oft oder wirkt unsicher.",
+    "Tipps":"Gehspiele, Balanceübungen.",
+    "Ausfuehrlich":"Spiele wie Hüpfen auf Linien, kleine Hindernisse, Hand halten nur bei Bedarf. Lobe Erfolge und sichere Umgebung bieten."
+  },
+  "Treppensteigen unsicher": {
+    "Beschreibung":"Braucht Hilfe beim Treppensteigen.",
+    "Tipps":"Schrittweise Übung, Hand führen.",
+    "Ausfuehrlich":"Feste Hand halten, Übungsrunden einbauen, Lob bei selbstständigen Schritten."
+  },
+  "Springen": {
+    "Beschreibung":"Kann noch nicht gut springen.",
+    "Tipps":"Kleinere Sprünge üben, spielerisch.",
+    "Ausfuehrlich":"Springübungen auf Matten, Linien, in Spielen einbauen: 'Wer springt am weitesten?' Loben."
+  },
+  "Ball werfen": {
+    "Beschreibung":"Treffen schwer, unsicher.",
+    "Tipps":"Zielübungen, nah starten.",
+    "Ausfuehrlich":"Weiche Bälle, nahes Ziel, Schritt für Schritt Distanz erhöhen, Lob für Treffer."
+  },
+  "Feinmotorik": {
+    "Beschreibung":"Probleme beim Malen oder Basteln.",
+    "Tipps":"Perlen fädeln, Kneten, Schneiden üben.",
+    "Ausfuehrlich":"Übungen mit Knete, Schere für dicke Linien, Perlen fädeln, spielerisch und geduldig. Loben."
+  },
+  "Balancieren": {
+    "Beschreibung":"Schwierig auf Balken oder Bordsteinen.",
+    "Tipps":"Kleine Balancierübungen, spielerisch.",
+    "Ausfuehrlich":"Balanceübungen auf Linien, Balken, spielerisch mit Geschichten: 'Geh wie ein Tiger.' Lob für Erfolg."
+  },
+  "Klettern": {
+    "Beschreibung":"Unsicher beim Klettern auf Spielgeräten.",
+    "Tipps":"Sicher begleiten, kleine Schritte.",
+    "Ausfuehrlich":"Kleine Höhen wählen, Hand halten nur bei Bedarf, Schritt-für-Schritt. Loben für Selbstständigkeit."
+  },
+  "Hände koordinieren": {
+    "Beschreibung":"Probleme beim Zusammenarbeiten beider Hände.",
+    "Tipps":"Beidseitige Spiele, Malen, Puzzeln.",
+    "Ausfuehrlich":"Puzzle, Knete, einfache Bastelarbeiten, beide Hände einsetzen, Lob für Mitarbeit."
+  },
+  "Schnelligkeit": {
+    "Beschreibung":"Wirkt langsam bei Bewegungsabläufen.",
+    "Tipps":"Spiele, die Tempo fördern.",
+    "Ausfuehrlich":"Rennen, Fangspiele, Staffeln, Schritt für Schritt Tempo üben, Lob für Fortschritt."
+  },
+  "Koordination bei Kleidung": {
+    "Beschreibung":"Schwierigkeiten beim Schuhe oder Jacke anziehen.",
+    "Tipps":"Rituale, Schritt-für-Schritt zeigen.",
+    "Ausfuehrlich":"Schrittweise erklären, Handhaltung zeigen, Wahlmöglichkeiten geben, Lob für selbstständige Versuche."
+  }
+},
+
+"Gefühle & Emotionen": {
+  "Frust zeigen": {
+    "Beschreibung":"Weint oder schreit bei Misserfolg.",
+    "Tipps":"Gefühle benennen, ruhig bleiben.",
+    "Ausfuehrlich":"Sage: 'Ich sehe, du bist frustriert.' Zeige Lösungen: 'Willst du es noch einmal versuchen?' Geduldig bleiben, Lob bei Erfolg."
+  },
+  "Eifersucht": {
+    "Beschreibung":"Reagiert auf Aufmerksamkeit für Geschwister oder Freunde.",
+    "Tipps":"Aufmerksamkeit teilen, Gefühle benennen.",
+    "Ausfuehrlich":"Kurze Einzelzeit, Gefühle ansprechen: 'Ich sehe, du bist traurig.' Lobe geteilte Momente."
+  },
+  "Ängstlich bei neuen Situationen": {
+    "Beschreibung":"Zögerlich bei unbekannten Personen oder Orten.",
+    "Tipps":"Schrittweise Einführung, Sicherheit geben.",
+    "Ausfuehrlich":"Ruhig begleiten, kleine Schritte, Lob für jeden Versuch."
+  },
+  "Überreaktion": {
+    "Beschreibung":"Übertriebene Reaktion bei Kleinigkeiten.",
+    "Tipps":"Gefühle benennen, ruhig bleiben.",
+    "Ausfuehrlich":"Sag: 'Ich sehe, du bist überrascht/wütend.' Zeige Alternativen, kurze Pausen, Lob für Selbstkontrolle."
+  },
+  "Wutanfälle": {
+    "Beschreibung":"Kurze, heftige Wutanfälle.",
+    "Tipps":"Ruhe bewahren, Gefühle benennen.",
+    "Ausfuehrlich":"Ruhig bleiben, Gefühle aussprechen, keine Nachsicht bei Regeln brechen, Lob für Beruhigung."
+  },
+  "Schamgefühl": {
+    "Beschreibung":"Reagiert empfindlich auf Kritik oder Missgeschick.",
+    "Tipps":"Positiv bestärken, kleine Erfolge loben.",
+    "Ausfuehrlich":"Fehler als Lernchance darstellen, loben, kleine Aufgaben geben, Selbstvertrauen stärken."
+  },
+  "Traurigkeit": {
+    "Beschreibung":"Zieht sich zurück, weint viel.",
+    "Tipps":"Gefühle ansprechen, Nähe geben.",
+    "Ausfuehrlich":"Fragen: 'Willst du darüber reden?' Kurze Kuschelzeit, Rituale, Sicherheit vermitteln."
+  },
+  "Überforderung": {
+    "Beschreibung":"Wirkt schnell überfordert bei neuen Aufgaben.",
+    "Tipps":"Aufgaben in kleine Schritte teilen.",
+    "Ausfuehrlich":"Schrittweise Aufgaben geben, Lob für Teilerfolge, Geduld zeigen."
+  },
+  "Freude zeigen": {
+    "Beschreibung":"Kaum Ausdruck von Freude oder Begeisterung.",
+    "Tipps":"Positive Erlebnisse verstärken, nachahmen.",
+    "Ausfuehrlich":"Zeige Freude selbst, kommentiere Erlebnisse: 'Wie toll, dass du den Turm gebaut hast!'"
+  },
+  "Empathie üben": {
+    "Beschreibung":"Reagiert wenig auf Gefühle anderer.",
+    "Tipps":"Gefühle benennen, Rollenspiele.",
+    "Ausfuehrlich":"Gefühle anderer benennen: 'Dein Freund ist traurig.' Rollenspiele und Geschichten nutzen, Lob bei Mitgefühl."
+  }
+},
+
+"Selbstständigkeit & Alltag": {
+  "Anziehen selbstständig": {
+    "Beschreibung":"Braucht Hilfe bei Kleidung.",
+    "Tipps":"Schrittweise zeigen, loben.",
+    "Ausfuehrlich":"Schrittweise Anleitung: 'Zuerst Socken, dann Schuhe.' Lobe jeden Schritt, lasse eigene Versuche zu."
+  },
+  "Aufräumen": {
+    "Beschreibung":"Räumt Spielzeug nicht weg.",
+    "Tipps":"Kurze Routinen, feste Zeiten.",
+    "Ausfuehrlich":"Ritual: '5 Minuten Aufräumen.' Timer nutzen, spielerisch, loben."
+  },
+  "Hilfe im Haushalt": {
+    "Beschreibung":"Möchte nicht helfen.",
+    "Tipps":"Kleine Aufgaben, spielerisch einführen.",
+    "Ausfuehrlich":"Einfache Aufgaben: Besteck auf den Tisch legen. Lob für Mitarbeit, Schrittweise steigern."
+  },
+  "Toilettentraining": {
+    "Beschreibung":"Will nicht auf Toilette gehen.",
+    "Tipps":"Routine, positive Verstärkung.",
+    "Ausfuehrlich":"Regelmäßige Zeiten anbieten, Lob für Fortschritte, keine Strafen."
+  },
+  "Zahnpflege selbstständig": {
+    "Beschreibung":"Weigert sich, alleine Zähne zu putzen.",
+    "Tipps":"Vorzeigen, Schritt für Schritt, loben.",
+    "Ausfuehrlich":"Zeige Technik, lass Kind nachmachen, kleine Erfolge loben."
+  },
+  "Mahlzeiten selbstständig": {
+    "Beschreibung":"Braucht Hilfe beim Essen.",
+    "Tipps":"Schrittweise, Besteck üben.",
+    "Ausfuehrlich":"Lass Kind selbst essen, hilf nur bei Bedarf, lobe selbstständige Aktionen."
+  },
+  "Rucksack packen": {
+    "Beschreibung":"Braucht Hilfe beim Packen für Kita.",
+    "Tipps":"Checkliste, Schrittweise, loben.",
+    "Ausfuehrlich":"Checkliste erstellen, jeden Punkt abhaken, Schrittweise selbst packen lassen, loben."
+  },
+  "Anweisungen folgen": {
+    "Beschreibung":"Folgt Aufforderungen nicht.",
+    "Tipps":"Kurze Sätze, Blickkontakt, Lob.",
+    "Ausfuehrlich":"Kurze Anweisungen geben, Blickkontakt, bei Umsetzung loben, Schrittweise steigern."
+  },
+  "Spielregeln einhalten": {
+    "Beschreibung":"Hält Regeln beim Spielen nicht ein.",
+    "Tipps":"Regeln klar erklären, Lob für Einhaltung.",
+    "Ausfuehrlich":"Regeln kurz erklären, Beispiel vormachen, Lob bei Einhaltung, Schrittweise Schwierigkeit erhöhen."
+  },
+  "Eigene Entscheidungen treffen": {
+    "Beschreibung":"Lässt sich nicht entscheiden, will immer Hilfe.",
+    "Tipps":"Wahlmöglichkeiten, kleine Entscheidungen üben.",
+    "Ausfuehrlich":"Biete 2–3 Wahlmöglichkeiten an: 'Willst du Apfel oder Banane?' Lobe selbstständige Entscheidungen, nach und nach schwieriger machen."
+  }
+}
+
+
+};
+
+// ======= SCRIPT ZUM ANZEIGEN ======= //
+const topicsContainer = document.getElementById("topicsContainer");
+
+for(let topic in data){
+  const btn = document.createElement("button");
+  btn.className = "accordion";
+  btn.innerText = topic;
+  const panel = document.createElement("div");
+  panel.className = "panel";
+
+  for(let sub in data[topic]){
+    const subBtn = document.createElement("div");
+    subBtn.className = "subaccordion";
+    subBtn.innerText = sub;
+    const tipPanel = document.createElement("div");
+    tipPanel.className = "panel";
+    tipPanel.innerHTML = `<table><tr><th>Was das Kind macht</th><th>Tipps & Strategie</th></tr>
+    <tr><td>${data[topic][sub]["Beschreibung"]}</td><td>${data[topic][sub]["Tipps"]}</td></tr></table>
+    <div class="tip"><strong>Ausführliche Tipps:</strong> ${data[topic][sub]["Ausfuehrlich"]}</div>`;
+    
+    subBtn.onclick = function(e){
+      e.stopPropagation();
+      tipPanel.style.display = tipPanel.style.display === "block" ? "none" : "block";
+    }
+
+    panel.appendChild(subBtn);
+    panel.appendChild(tipPanel);
+  }
+
+  btn.onclick = function(){ panel.style.display = panel.style.display === "block" ? "none" : "block"; }
+  topicsContainer.appendChild(btn);
+  topicsContainer.appendChild(panel);
+}
+</script>
+</body>
+</html>
